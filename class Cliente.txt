@@ -1,0 +1,66 @@
+class Cliente:
+    def __init__(self, cpf, nome, endereco, profissao):
+        self.cpf = cpf
+        self.nome = nome
+        self.endereco = endereco
+        self.profissao = profissao
+
+
+class Conta:
+    def __init__(self, cliente, numero, agencia, saldo):
+        self.cliente = cliente
+        self.numero = numero
+        self.agencia = agencia
+        self.saldo = saldo
+
+    def deposito(self, valor):
+        self.saldo += valor
+
+    def saque(self, valor):
+        raise NotImplementedError("Método saque deve ser implementado nas subclasses")
+
+
+class ContaCorrente(Conta):
+    def __init__(self, cliente, numero, agencia, saldo, limite):
+        super().__init__(cliente, numero, agencia, saldo)
+        self.limite = limite
+
+    def saque(self, valor):
+        if self.saldo + self.limite >= valor:
+            self.saldo -= valor
+        else:
+            print("Saldo insuficiente")
+
+
+class ContaPoupanca(Conta):
+    def saque(self, valor):
+        if self.saldo >= valor:
+            self.saldo -= valor
+        else:
+            print("Saldo insuficiente")
+
+    def calcular_juros(self, taxa_juros):
+        juros = self.saldo * (taxa_juros / 100)
+        self.saldo += juros
+
+
+# Exemplo de uso:
+
+# Criar um cliente
+cliente1 = Cliente("123.456.789-00", "João", "Rua A, 123", "Engenheiro")
+
+# Criar contas para o cliente
+conta_corrente1 = ContaCorrente(cliente1, "001", "1234", 1000, 500)
+conta_poupanca1 = ContaPoupanca(cliente1, "002", "1234", 2000)
+
+# Operações com as contas
+conta_corrente1.deposito(500)
+conta_corrente1.saque(700)
+print("Saldo Conta Corrente:", conta_corrente1.saldo)
+
+conta_poupanca1.deposito(1000)
+conta_poupanca1.saque(500)
+print("Saldo Conta Poupança:", conta_poupanca1.saldo)
+
+conta_poupanca1.calcular_juros(0.5)  # Calcula juros mensais de 0.5%
+print("Saldo Conta Poupança após juros:", conta_poupanca1.saldo)
